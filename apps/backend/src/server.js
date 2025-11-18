@@ -26,7 +26,11 @@ const api = express();
 // middleware
 api.use(express.json());
 api.use(cors({
-  origin: "http://localhost:3000",
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://edusafe3.vercel.app"
+  ],
   credentials: true
 }));
 api.use(cookieParser());
