@@ -20,8 +20,12 @@ export default function CuacaPage() {
   useEffect(() => {
     async function fetchWeather() {
       try {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || '';
+        if (!apiBase) {
+          throw new Error('API_BASE is not configured');
+        }
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/weather/midday?lat=-0.002122&lon=109.369550`,
+          `${apiBase}/weather/midday?lat=-0.002122&lon=109.369550`,
           { cache: "no-store" }
         );
         const json = await res.json();
@@ -39,8 +43,12 @@ export default function CuacaPage() {
   useEffect(() => {
     async function fetchWeekly() {
       try {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || '';
+        if (!apiBase) {
+          throw new Error('API_BASE is not configured');
+        }
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/weather/weekly?lat=-0.002122&lon=109.369550`,
+          `${apiBase}/weather/weekly?lat=-0.002122&lon=109.369550`,
           { cache: "no-store" }
         );
         const json = await res.json();
