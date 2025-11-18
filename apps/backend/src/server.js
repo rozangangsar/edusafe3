@@ -29,7 +29,8 @@ api.use(cors({
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://edusafe3.vercel.app"
+    "https://edusafe3.vercel.app",
+    "https://edusafe-woad.vercel.app"
   ],
   credentials: true
 }));
