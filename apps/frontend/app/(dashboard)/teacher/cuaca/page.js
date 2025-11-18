@@ -25,7 +25,7 @@ export default function CuacaPage() {
           throw new Error('API_BASE is not configured');
         }
         const res = await fetch(
-          `${apiBase}/weather/midday?lat=-0.002122&lon=109.369550`,
+          `${apiBase}/api/weather/midday?lat=-0.002122&lon=109.369550`,
           { cache: "no-store" }
         );
         const json = await res.json();
@@ -48,7 +48,7 @@ export default function CuacaPage() {
           throw new Error('API_BASE is not configured');
         }
         const res = await fetch(
-          `${apiBase}/weather/weekly?lat=-0.002122&lon=109.369550`,
+          `${apiBase}/api/weather/weekly?lat=-0.002122&lon=109.369550`,
           { cache: "no-store" }
         );
         const json = await res.json();
