@@ -2,6 +2,6 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "node src/server.js"
+startCommand = "npm install && node src/server.js"
 healthcheckPath = "/"
 healthcheckTimeout = 30
