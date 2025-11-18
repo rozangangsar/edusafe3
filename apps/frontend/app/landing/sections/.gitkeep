@@ -1,0 +1,7 @@
+// Placeholder untuk section components yang lebih kompleks
+// Contoh: Testimonials, Pricing, About, dll
+
+// export { default as Testimonials } from './Testimonials';
+// export { default as Pricing } from './Pricing';
+// export { default as About } from './About';
+

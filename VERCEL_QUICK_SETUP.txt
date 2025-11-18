@@ -1,0 +1,71 @@
+================================================================================
+              VERCEL FRONTEND DEPLOYMENT - QUICK SETUP
+================================================================================
+
+Go to: https://vercel.com/new
+
+================================================================================
+STEP 1: Connect GitHub
+================================================================================
+
+1. Click "Continue with GitHub"
+2. Authorize Vercel
+
+================================================================================
+STEP 2: Select Repository
+================================================================================
+
+1. Search for: edusafe3
+2. Click to select edusafe3 repository
+3. Click "Import"
+
+================================================================================
+STEP 3: Configure Project
+================================================================================
+
+IMPORTANT - Set these fields:
+
+Root Directory:              apps/frontend
+                             ↑ THIS IS CRITICAL!
+
+Framework Preset:            Next.js
+Build Command:              npm run build
+Output Directory:           .next
+Install Command:            npm install
+
+================================================================================
+STEP 4: Environment Variables
+================================================================================
+
+Add ONE variable:
+
+Name:   NEXT_PUBLIC_API_BASE_URL
+Value:  http://localhost:4000
+
+(After backend deploy, update this value to backend URL)
+
+================================================================================
+STEP 5: Deploy!
+================================================================================
+
+Click: DEPLOY
+
+Wait 3-5 minutes...
+
+================================================================================
+DONE!
+================================================================================
+
+Your frontend will be at:
+https://edusafe3.vercel.app
+
+Check deployment status:
+https://vercel.com/dashboard/project/edusafe3
+
+================================================================================
+NEXT: Deploy Backend
+================================================================================
+
+After frontend done, kita deploy backend ke Railway/Render/Heroku
+
+Then update NEXT_PUBLIC_API_BASE_URL dengan backend URL

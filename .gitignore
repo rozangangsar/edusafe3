@@ -12,7 +12,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json # opsional: kalau kamu mau reproducible builds, HAPUS baris ini
 
 # === Build & cache ===
 dist/
@@ -21,10 +20,15 @@ coverage/
 .cache/
 .tmp/
 .temp/
+.next/
+
+# === Turbo ===
+.turbo/
 
 # === Editor/OS ===
 .vscode/
 .vs/
+.idea/
 .DS_Store
 Thumbs.db
 

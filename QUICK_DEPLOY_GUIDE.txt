@@ -1,0 +1,118 @@
+================================================================================
+                    QUICK DEPLOYMENT SETUP GUIDE
+================================================================================
+
+GOAL: Push monorepo ke GitHub personal kamu tanpa mengubah repo utama
+
+================================================================================
+STEP 1: Create New Repository di GitHub (5 menit)
+================================================================================
+
+1. Go to: https://github.com/new
+2. Repository name: edusafe-deploy
+3. Description: EduSafe Deployment Repository (optional)
+4. Visibility: Private (recommended) or Public
+5. DO NOT check "Initialize with README"
+6. Click: Create repository
+
+Result: Kamu akan dapat URL seperti ini:
+        https://github.com/YOUR_USERNAME/edusafe-deploy.git
+
+SAVE URL INI! Kamu butuh di step berikutnya.
+
+================================================================================
+STEP 2: Add Deploy Remote (1 menit)
+================================================================================
+
+Open PowerShell/CMD dan run:
+
+cd C:\Users\ROZAN\source\repos\edusafe
+
+git remote add deploy https://github.com/YOUR_USERNAME/edusafe-deploy.git
+
+(Ganti YOUR_USERNAME dengan username GitHub kamu)
+
+Verify dengan:
+git remote -v
+
+Expected output:
+  origin  https://github.com/Amelianahardianti/edusafe.git (fetch)
+  origin  https://github.com/Amelianahardianti/edusafe.git (push)
+  deploy  https://github.com/YOUR_USERNAME/edusafe-deploy.git (fetch)
+  deploy  https://github.com/YOUR_USERNAME/edusafe-deploy.git (push)
+
+================================================================================
+STEP 3: Push to Deployment Repository (2 menit)
+================================================================================
+
+Option A - Simple (direct push ke main):
+git push deploy main
+
+Option B - Safe (create branch dulu, jika main ada history yang tidak ingin dipush):
+git checkout -b deploy-ready
+git push deploy deploy-ready:main
+
+Choose Option A jika tidak ada history yang tidak ingin dipush.
+Choose Option B jika ada history yang ingin tetap di origin saja.
+
+================================================================================
+STEP 4: Verify di GitHub (1 menit)
+================================================================================
+
+1. Open: https://github.com/YOUR_USERNAME/edusafe-deploy
+2. Check apakah ada file/folder ini:
+   ✓ apps/
+   ✓ package.json
+   ✓ turbo.json
+   ✓ vercel.json
+   ✓ .gitignore
+
+Jika semua ada, setup berhasil!
+
+================================================================================
+STEP 5: Deploy ke Vercel (5-10 menit)
+================================================================================
+
+1. Go to: https://vercel.com/new
+2. Click: Continue with GitHub
+3. Select repository: edusafe-deploy
+4. Configure:
+   - Root Directory: apps/frontend
+   - Framework: Next.js
+   - Build Command: npm run build
+   - Output Directory: .next
+5. Set Environment Variables (jika ada)
+6. Click: Deploy
+
+Wait 2-3 menit, dan selesai!
+
+Vercel akan give you URL seperti:
+https://edusafe-rozan.vercel.app
+
+================================================================================
+FUTURE WORKFLOW
+================================================================================
+
+Jika ada changes di repo utama yang ingin kamu include di deploy:
+
+git pull origin main          # Get latest from utama repo
+git push deploy main          # Push ke deploy repo
+# Vercel auto-redeploy!
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+✓ origin tetap pointing ke repo utama (Amelianahardianti/edusafe)
+✓ deploy baru pointing ke repo kamu (YOUR_USERNAME/edusafe-deploy)
+✓ History di repo utama tetap clean
+✓ Kamu bisa pull/push ke origin tanpa khawatir
+
+Troubleshoot:
+- If git push fails: Check kamu sudah login ke GitHub di browser
+- If Vercel fails: Check environment variables di Vercel dashboard
+- If API calls fail: Update API URL di frontend/lib/api.js ke backend URL
+
+================================================================================
+                              READY? LET'S GO!
+================================================================================
