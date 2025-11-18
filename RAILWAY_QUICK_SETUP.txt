@@ -1,0 +1,147 @@
+================================================================================
+            RAILWAY BACKEND DEPLOYMENT - QUICK SETUP
+================================================================================
+
+Go to: https://railway.app
+
+================================================================================
+STEP 1: Sign Up with GitHub
+================================================================================
+
+1. Click "Sign Up"
+2. Click "Continue with GitHub"
+3. Authorize Railway
+
+================================================================================
+STEP 2: Create New Project
+================================================================================
+
+1. Click "New Project"
+2. Click "Deploy from GitHub repo"
+3. Search: edusafe3
+4. Select: rozangangsar/edusafe3
+5. Click "Deploy Now"
+
+Railway akan auto-detect dan mulai deploy.
+
+================================================================================
+STEP 3: Set Root Directory (jika diperlukan)
+================================================================================
+
+1. Click pada project yang deploy
+2. Click "Settings" tab
+3. Set "Root Directory" atau "Service Path": apps/backend
+4. Save
+
+================================================================================
+STEP 4: Add Environment Variables
+================================================================================
+
+Click "Variables" tab dan add:
+
+PORT
+4000
+
+MONGO_URI
+mongodb+srv://amelianahardiantiutari_db_user:KOcYoFp8yT5wnMkQ@paw.mdfrkop.mongodb.net/edusafe?retryWrites=true&w=majority&appName=paw
+
+JWT_SECRET
+DIISIAPAYABRAY
+
+REDIS_URL
+redis://default:5xdYlsdNtnIzj00rtZb7tWdgCIlKN1a3@redis-10365.crce185.ap-seast-1-1.ec2.cloud.redislabs.com:10365
+
+DEFAULT_CACHE_TTL
+300
+
+WEATHERAPI_KEY
+d2ed3ac229db428bab5173412251509
+
+SCHOOL_LAT
+-7.765223139059618
+
+SCHOOL_LON
+110.37252330743343
+
+WEATHER_CHECK_HOUR
+9
+
+WEATHER_CHECK_MINUTE
+0
+
+================================================================================
+STEP 5: Wait for Deployment
+================================================================================
+
+Wait 3-5 minutes for build & deploy complete.
+
+Check status in Railway dashboard.
+
+================================================================================
+STEP 6: Get Backend URL
+================================================================================
+
+Railway akan provide URL seperti:
+
+https://edusafe-backend-prod.up.railway.app
+
+atau
+
+https://your-service-name.railway.app
+
+COPY URL INI! Kita butuh untuk update frontend.
+
+================================================================================
+STEP 7: Test Backend
+================================================================================
+
+Test endpoint:
+
+curl https://your-railway-url/api/auth/login
+
+Harusnya return error 400 atau success (tergantung request).
+
+Jika bisa reach = backend working!
+
+================================================================================
+STEP 8: Update Frontend API URL
+================================================================================
+
+1. Go to Vercel dashboard: https://vercel.com/dashboard
+2. Click project: edusafe3
+3. Click "Settings"
+4. Click "Environment Variables"
+5. Edit: NEXT_PUBLIC_API_BASE_URL
+6. Change value to: https://your-railway-url
+7. Save
+
+Vercel auto-redeploy dengan new API URL.
+
+Wait 1-2 menit.
+
+================================================================================
+DONE! Backend & Frontend Connected!
+================================================================================
+
+Frontend (Vercel):     https://edusafe3.vercel.app
+Backend (Railway):     https://your-railway-url
+
+Test dengan login di frontend - harusnya bisa connect ke backend!
+
+================================================================================
+TROUBLESHOOT
+================================================================================
+
+Q: Deploy failed?
+A: Click "Logs" tab untuk lihat error. Check jika package.json ada di apps/backend
+
+Q: API endpoints return error?
+A: Check Railway "Logs" tab untuk backend error messages
+
+Q: Frontend masih tidak bisa reach backend?
+A: 1. Verify NEXT_PUBLIC_API_BASE_URL correct di Vercel
+   2. Wait 2-3 menit untuk Vercel redeploy
+   3. Check CORS di backend (src/server.js)
+
+More help: RAILWAY_BACKEND_GUIDE.md
+================================================================================
