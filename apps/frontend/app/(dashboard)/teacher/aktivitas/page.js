@@ -14,7 +14,8 @@ export default function ActivityAnakPage() {
  useEffect(() => {
   async function load() {
     try {
-      const res = await apiFetch("/api/activitychild");
+      // Gunakan /api/activitychild/mine untuk fetch hanya aktivitas milik guru ini
+      const res = await apiFetch("/api/activitychild/mine");
       const rows = res.data || [];
 
       const mapped = rows.map((item) => {
