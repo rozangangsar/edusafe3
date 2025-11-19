@@ -100,7 +100,7 @@ export default function ActivityAnakPage() {
           />
 
           <a
-            href="/inputaktivitasanak"
+            href="/teacher/aktivitas/inputaktivitas"
             className="bg-[#608FC2] text-white text-xs md:text-sm font-semibold px-4 py-2 rounded-md hover:opacity-90 transition"
           >
             Buat Aktivitas
