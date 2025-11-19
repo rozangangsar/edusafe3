@@ -46,7 +46,7 @@ export function useAuthGuard(...requiredRoles) {
     return () => {
       cancelled = true;
     };
-  }, [router, requiredRole]);
+  }, [router, requiredRoles]);
 
   return { user, loading };
 }

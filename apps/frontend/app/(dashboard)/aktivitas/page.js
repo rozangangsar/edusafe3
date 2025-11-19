@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import ActivityBeranda from "@/app/components/userPage/ActivityBeranda";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export default function ActivityAnakPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -10,12 +11,15 @@ export default function ActivityAnakPage() {
   const [selectedType, setSelectedType] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuthGuard('parent');
 
   // 🔵 FETCH DATA DARI BACKEND
   useEffect(() => {
+    if (authLoading) return;
+
     async function load() {
       try {
-        const res = await apiFetch("/api/activitychild");
+        const res = await apiFetch("/api/activitychild/mine");
         const rows = res.data || [];
 
         // Format data supaya sesuai komponen kartu
@@ -50,7 +54,7 @@ export default function ActivityAnakPage() {
 
     load();
     setCurrentTime(new Date());
-  }, []);
+  }, [authLoading]);
 
   // 🔵 Format tanggal header
   const formatDate = () => {
@@ -76,7 +80,7 @@ export default function ActivityAnakPage() {
     return matchType && matchDate;
   });
 
-  if (loading)
+  if (authLoading || loading)
     return <p className="text-center mt-20 text-slate-600">Memuat aktivitas...</p>;
 
   return (
