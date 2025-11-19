@@ -69,7 +69,13 @@ export default function InputAktivitasAnak() {
       });
 
       alert("Aktivitas berhasil ditambahkan!");
-      router.push("/admin/aktivitas");
+
+      // Redirect berdasarkan role user
+      const redirectPath = user?.role === "teacher"
+        ? "/teacher/aktivitas"
+        : "/admin/aktivitas";
+
+      router.push(redirectPath);
     } catch (err) {
       console.error(err);
       alert("Gagal menambah aktivitas");
