@@ -1,3 +1,4 @@
+#Untuk deploy aja karena susunan directory frontend dan backend di ameliana/edusafe tidak selevel jadi gabisa dideploy
 # Aplikasi Website Edusafe
 
 ## Deskripsi Aplikasi
