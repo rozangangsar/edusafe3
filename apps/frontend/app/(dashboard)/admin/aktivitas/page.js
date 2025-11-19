@@ -2,51 +2,71 @@
 import React, { useEffect, useState } from "react";
 import weatherData from "@/app/components/mockData/data_center";
 import ActivityBeranda from "@/app/components/userPage/ActivityBeranda";
-
-const activityList = [
-  {
-    style: "w-full h-full",
-    type: "Kelas",
-    name: "MULAT ADI",
-    text: "melakukan Kelas Matematika untuk hari ini!",
-    date: "Selasa, 25 Oktober 2025",
-    time_from: "07.00",
-    time_to: "08.30",
-    sender: "Ir. Lorem Ipsum S.Pd.Fil",
-  },
-  {
-    style: "w-full h-full",
-    type: "Aktivitas",
-    name: "[Nama Murid 1]",
-    text: "akan melakukan Jalan Pagi mengelilingi kota untuk hari ini!",
-    date: "Rabu, 26 Oktober 2025",
-    time_from: "07.00",
-    time_to: "08.30",
-    sender: "Wali Kelas",
-  },
-  {
-    style: "w-full h-full",
-    type: "Pemberitahuan",
-    name: "[Nama Murid 1]",
-    text: "sudah menyelesaikan sekolah untuk hari ini!",
-    date: "Rabu, 26 Oktober 2025",
-    time_from: "12.30",
-    time_to: "lmao",
-    sender: "Admin Sekolah",
-  },
-];
+import { apiFetch } from "@/lib/api";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import LoadingOverlay from "@/app/components/LoadingOverlay";
 
 export default function ActivityAnakPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [weatherForecast, setWeatherForecast] = useState([]);
-  const [selectedType, setSelectedType] = useState("Kelas");
+  const [selectedType, setSelectedType] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [activityList, setActivityList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const { user, loading: authLoading } = useAuthGuard('admin');
 
   useEffect(() => {
     setCurrentTime(new Date());
     const forecast = getNext6HoursWeather();
     setWeatherForecast(forecast);
   }, []);
+
+  // Fetch aktivitas dari API
+  useEffect(() => {
+    if (authLoading) return;
+
+    const fetchActivities = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await apiFetch("/api/activitychild");
+
+        if (response && response.data) {
+          // Transform data dari API ke format yang sesuai untuk display
+          const transformedData = response.data.map((activity) => ({
+            id: activity._id,
+            style: "w-full h-full",
+            type: "Aktivitas",
+            name: activity.ChildID?.name || "[Nama Tidak Diketahui]",
+            text: `melakukan ${activity.Activity} untuk hari ini!`,
+            date: activity.Date
+              ? new Date(activity.Date).toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric"
+                })
+              : "-",
+            time_from: activity.TimeStart || "-",
+            time_to: activity.TimeEnd || "-",
+            sender: activity.TeacherID?.name || "[Nama Guru]",
+          }));
+          setActivityList(transformedData);
+        } else {
+          setActivityList([]);
+        }
+      } catch (err) {
+        console.error("Error fetching activities:", err);
+        setError(err.message || "Gagal memuat aktivitas");
+        setActivityList([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [authLoading]);
 
   const getNext6HoursWeather = () => {
     const now = new Date();
@@ -95,6 +115,10 @@ export default function ActivityAnakPage() {
     return matchType && matchDate;
   });
 
+  if (authLoading) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#F5F7FA]">
       <main className="max-w-[80vw] mx-auto px-4 md:px-8 py-8">
@@ -104,6 +128,13 @@ export default function ActivityAnakPage() {
           <h1 className="text-2xl font-bold text-slate-900">Aktivitas Anak</h1>
           <p className="text-sm text-slate-600 mt-1">{formatDate()}</p>
         </header>
+
+        {/* ERROR MESSAGE */}
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
 
         {/* ============================================================
              🔵 BAR FILTER + BUTTON BUAT AKTIVITAS
@@ -157,19 +188,29 @@ export default function ActivityAnakPage() {
 
         {/* LIST KARTU */}
         <div className="flex flex-col gap-5">
-          {filteredActivityList.map((item, idx) => (
-            <ActivityBeranda
-              key={idx}
-              style={item.style}
-              type={item.type}
-              name={item.name}
-              text={item.text}
-              date={item.date}
-              time_from={item.time_from}
-              time_to={item.time_to}
-              sender={item.sender}
-            />
-          ))}
+          {loading ? (
+            <div className="text-center py-8 text-gray-500">
+              Memuat aktivitas...
+            </div>
+          ) : filteredActivityList.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Tidak ada aktivitas ditemukan
+            </div>
+          ) : (
+            filteredActivityList.map((item, idx) => (
+              <ActivityBeranda
+                key={item.id || idx}
+                style={item.style}
+                type={item.type}
+                name={item.name}
+                text={item.text}
+                date={item.date}
+                time_from={item.time_from}
+                time_to={item.time_to}
+                sender={item.sender}
+              />
+            ))
+          )}
         </div>
       </main>
     </div>
