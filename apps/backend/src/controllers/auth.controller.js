@@ -2,6 +2,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Child from "../models/Child.js";
 
 const issueToken = (user) => {
   const payload = { sub: user._id.toString(), role: user.role, name: user.name };
@@ -40,11 +41,19 @@ export const login = async (req, res) => {
   const ok = await bcrypt.compare(password, u.password);
   if (!ok) return res.status(401).json({ msg: "invalid credentials" });
 
-  // 3) sign token
+  // 3) build JWT payload
   const payload = { sub: u._id.toString(), role: u.role, email: u.email };
+
+  // 3a) jika parent, include childIDs di payload
+  if (u.role === "parent") {
+    const children = await Child.find({ parentID: u._id }).select("_id");
+    payload.childIDs = children.map((c) => c._id.toString());
+  }
+
+  // 3b) sign token
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-  // set cookie httpOnly 
+  // set cookie httpOnly
   res.cookie("token", token, {
     httpOnly: true,
     secure: false,      // localhost = false
