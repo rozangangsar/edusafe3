@@ -4,24 +4,33 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {useRouter} from 'next/navigation';
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { apiFetch } from "@/lib/api";
 import LoadingOverlay from "../../../components/LoadingOverlay";
 
 export default function Tabel() {
   const [accounts, setAccounts] = useState([]);
-    const { user, loading } = useAuthGuard('admin');
-    const router = useRouter();
+  const [error, setError] = useState("");
+  const { user, loading } = useAuthGuard('admin');
+  const router = useRouter();
 
-        useEffect(() => {
-        fetch("http://localhost:4000/api/users/accounts", {
-            method: "GET",
-            credentials: "include",
-        })
-            .then((res) => res.json())
-            .then((data) => {
-            console.log("DATA DARI API:", data);
-            setAccounts(data);
-            });
-        }, []);
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const data = await apiFetch("/api/users/accounts");
+        console.log("DATA DARI API:", data);
+        setAccounts(Array.isArray(data) ? data : []);
+        setError("");
+      } catch (err) {
+        console.error("Error fetching accounts:", err);
+        setError(err.message || "Gagal memuat data akun");
+        setAccounts([]);
+      }
+    };
+
+    if (!loading) {
+      fetchAccounts();
+    }
+  }, [loading]);
 
         if (loading) {
           return <LoadingOverlay />;
@@ -31,6 +40,11 @@ export default function Tabel() {
     <div className="flex flex-col justify-center p-[5vh] w-[90vw]">
       <div className="flex justify-between w-full p-[2vh]">
         <h1 className="font-bold text-3xl">Informasi Akun</h1>
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
         <motion.button
           initial={{ backgroundColor: "#0D58AB" }}
