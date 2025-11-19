@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 
-export function useAuthGuard(requiredRole) {
+export function useAuthGuard(...requiredRoles) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -25,7 +25,8 @@ export function useAuthGuard(requiredRole) {
 
         if (!u) throw new Error('no user data from /api/auth/me');
 
-        if (requiredRole && u.role !== requiredRole) {
+        // Allow multiple roles: useAuthGuard('teacher', 'admin')
+        if (requiredRoles.length > 0 && !requiredRoles.includes(u.role)) {
           router.replace('/ErrorPage');
           return;
         }

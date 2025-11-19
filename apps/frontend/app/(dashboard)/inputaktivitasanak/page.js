@@ -8,7 +8,7 @@ import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export default function InputAktivitasAnak() {
   // HOOK SELALU DI ATAS
-  const { user, loading: authLoading } = useAuthGuard("teacher");
+  const { user, loading: authLoading } = useAuthGuard("teacher", "admin");
   const router = useRouter();
 
   const [children, setChildren] = useState([]);
