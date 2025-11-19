@@ -20,7 +20,14 @@ export const listMine = async (req, res, next) => {
       if (req.query.to)   q.Date.$lte = new Date(req.query.to);
     }
 
-    const items = await ActivityChild.find(q).sort({ Date: -1 });
+    const items = await ActivityChild.find(q)
+      .populate("ChildID", "name classId")
+      .populate({
+        path: "ChildID",
+        populate: { path: "classId", select: "name grade" }
+      })
+      .populate("TeacherID", "name email")
+      .sort({ Date: -1 });
     res.json({ data: items });
   } catch (err) {
     next(err);
