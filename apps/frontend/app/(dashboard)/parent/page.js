@@ -45,9 +45,6 @@ export default function ParentDashboard() {
     return <LoadingOverlay />;
   }
 
-  // Get the most recent activity to display
-  const latestActivity = activities.length > 0 ? activities[0] : null;
-
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
       <main className="px-6 sm:px-8 lg:px-12 py-8">
@@ -78,14 +75,14 @@ export default function ParentDashboard() {
             <NotifBeranda />
           </motion.div>
 
-          {/* Middle Column - Activity */}
+          {/* Middle Column - Activity List */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-6 flex justify-center"
+            className="lg:col-span-6"
           >
-            <div className="w-full max-w-2xl">
+            <div className="w-full">
               {error && (
                 <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">
                   {error}
@@ -96,24 +93,29 @@ export default function ParentDashboard() {
                 <div className="text-center py-8 text-gray-500">
                   Memuat aktivitas...
                 </div>
-              ) : latestActivity ? (
-                <ActivityBeranda
-                  name={latestActivity.ChildID?.name || "[Nama Anak]"}
-                  type="Aktivitas"
-                  text={`melakukan ${latestActivity.Activity}`}
-                  date={latestActivity.Date
-                    ? new Date(latestActivity.Date).toLocaleDateString("id-ID", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                      })
-                    : "-"}
-                  time_from={latestActivity.TimeStart || "-"}
-                  time_to={latestActivity.TimeEnd || "-"}
-                  sender={latestActivity.TeacherID?.name || "[Nama Guru]"}
-                  style="w-full h-auto xl:ml-[4vh]"
-                />
+              ) : activities.length > 0 ? (
+                <div className="flex flex-col gap-4 max-h-[600px] overflow-y-auto">
+                  {activities.map((activity, idx) => (
+                    <ActivityBeranda
+                      key={activity._id || idx}
+                      name={activity.ChildID?.name || "[Nama Anak]"}
+                      type="Aktivitas"
+                      text={`melakukan ${activity.Activity}`}
+                      date={activity.Date
+                        ? new Date(activity.Date).toLocaleDateString("id-ID", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                          })
+                        : "-"}
+                      time_from={activity.TimeStart || "-"}
+                      time_to={activity.TimeEnd || "-"}
+                      sender={activity.TeacherID?.name || "[Nama Guru]"}
+                      style="w-full h-auto"
+                    />
+                  ))}
+                </div>
               ) : (
                 <div className="text-center py-8 text-gray-500 border-2 border-gray-300 rounded-lg">
                   Belum ada aktivitas untuk anak Anda
