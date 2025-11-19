@@ -4,13 +4,50 @@ import ActivityBeranda from '@/app/components/userPage/ActivityBeranda';
 import NotifBeranda from '@/app/components/userPage/NotifBeranda';
 import { motion } from 'framer-motion';
 import TabelBeranda from '@/app/components/userPage/TabelBeranda';
-import CuacaBeranda from '@/app/components/userPage/CuacaBeranda';4
+import CuacaBeranda from '@/app/components/userPage/CuacaBeranda';
+import LoadingOverlay from '@/app/components/LoadingOverlay';
 import { apiFetch } from "@/lib/api";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 
-export default function ParentDashboard()
- {
-   
+export default function ParentDashboard() {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const { user, loading: authLoading } = useAuthGuard('parent');
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    const fetchActivities = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await apiFetch("/api/activitychild/mine");
+
+        if (response && response.data) {
+          setActivities(response.data);
+        } else {
+          setActivities([]);
+        }
+      } catch (err) {
+        console.error("Error fetching activities:", err);
+        setError(err.message || "Gagal memuat aktivitas");
+        setActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [authLoading]);
+
+  if (authLoading) {
+    return <LoadingOverlay />;
+  }
+
+  // Get the most recent activity to display
+  const latestActivity = activities.length > 0 ? activities[0] : null;
+
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
       <main className="px-6 sm:px-8 lg:px-12 py-8">
@@ -49,16 +86,39 @@ export default function ParentDashboard()
             className="lg:col-span-6 flex justify-center"
           >
             <div className="w-full max-w-2xl">
-              <ActivityBeranda 
-                name="MULAT ADI"
-                type="Kelas"
-                text="Melakukan Kelas Matematika"
-                date="Rabu, 26 Oktober 2025"
-                time_from="07.00"
-                time_to="08.30"
-                sender="Ir. Lorem Ipsum S.Pd.Fil"
-                style="w-full h-auto xl:ml-[4vh]"
-              />
+              {error && (
+                <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">
+                  {error}
+                </div>
+              )}
+
+              {loading ? (
+                <div className="text-center py-8 text-gray-500">
+                  Memuat aktivitas...
+                </div>
+              ) : latestActivity ? (
+                <ActivityBeranda
+                  name={latestActivity.ChildID?.name || "[Nama Anak]"}
+                  type="Aktivitas"
+                  text={`melakukan ${latestActivity.Activity}`}
+                  date={latestActivity.Date
+                    ? new Date(latestActivity.Date).toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                      })
+                    : "-"}
+                  time_from={latestActivity.TimeStart || "-"}
+                  time_to={latestActivity.TimeEnd || "-"}
+                  sender={latestActivity.TeacherID?.name || "[Nama Guru]"}
+                  style="w-full h-auto xl:ml-[4vh]"
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500 border-2 border-gray-300 rounded-lg">
+                  Belum ada aktivitas untuk anak Anda
+                </div>
+              )}
             </div>
           </motion.div>
 
