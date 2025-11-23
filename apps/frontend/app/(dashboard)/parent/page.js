@@ -70,7 +70,7 @@ export default function ParentDashboard() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-3"
+            className="lg:col-span-2"
           >
             <NotifBeranda />
           </motion.div>
@@ -80,7 +80,7 @@ export default function ParentDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-6"
+            className="lg:col-span-7"
           >
             <div className="w-full">
               {error && (
