@@ -1,18 +1,21 @@
 'use client';
 import { useEffect, useState } from "react";
 import ActivityBeranda from '@/app/components/userPage/ActivityBeranda';
-import NotifBeranda from '@/app/components/userPage/NotifBeranda';
 import { motion } from 'framer-motion';
 import TabelBeranda from '@/app/components/userPage/TabelBeranda';
 import CuacaBeranda from '@/app/components/userPage/CuacaBeranda';
 import LoadingOverlay from '@/app/components/LoadingOverlay';
+import Link from 'next/link';
 import { apiFetch } from "@/lib/api";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export default function ParentDashboard() {
   const [activities, setActivities] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notifLoading, setNotifLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notifError, setNotifError] = useState("");
   const { user, loading: authLoading } = useAuthGuard('parent');
 
   useEffect(() => {
@@ -38,7 +41,25 @@ export default function ParentDashboard() {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        setNotifLoading(true);
+        setNotifError("");
+        const data = await apiFetch("/api/broadcasts");
+        const arr = Array.isArray(data) ? data :
+          data.broadcasts || data.items || data.data || [];
+        setNotifications(arr);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+        setNotifError(err.message || "Gagal memuat notifikasi");
+        setNotifications([]);
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+
     fetchActivities();
+    fetchNotifications();
   }, [authLoading]);
 
   if (authLoading) {
@@ -72,7 +93,55 @@ export default function ParentDashboard() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="lg:col-span-2"
           >
-            <NotifBeranda />
+            <div className="backdrop-blur-md drop-shadow-xl h-auto rounded-lg border bg-white">
+              <div>
+                <h1 className="font-bold text-2xl text-white bg-[#0D58AB] rounded-t-md p-[2vh]">Berita Terbaru</h1>
+                <hr className="bg-yellow-500"></hr>
+              </div>
+              <div>
+                {notifError && (
+                  <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg m-4">
+                    {notifError}
+                  </div>
+                )}
+                {notifLoading ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Memuat notifikasi...
+                  </div>
+                ) : notifications.length > 0 ? (
+                  <div className="max-h-[600px] overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <motion.div
+                        key={notification.id}
+                        initial={{ backgroundColor: "#FFFFFF" }}
+                        whileHover={{ backgroundColor: "#DFE8F2" }}
+                        className="p-[2vh] border-b last:border-b-0 cursor-pointer transition"
+                      >
+                        <div className="font-bold decoration-yellow-500 decoration-2">
+                          {notification.title}
+                        </div>
+                        <div className="text-slate-500 text-sm ml-[1vw] mt-1">
+                          {notification.content}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    Belum ada notifikasi
+                  </div>
+                )}
+                <Link href="/parent/notifikasi">
+                  <motion.div
+                    className="p-[2vh] border-t text-slate-500 rounded-b-md text-center cursor-pointer"
+                    initial={{ backgroundColor: "#FFFFFF" }}
+                    whileHover={{ backgroundColor: "#DFE8F2" }}
+                  >
+                    Lihat Semua
+                  </motion.div>
+                </Link>
+              </div>
+            </div>
           </motion.div>
 
           {/* Middle Column - Activity List */}
